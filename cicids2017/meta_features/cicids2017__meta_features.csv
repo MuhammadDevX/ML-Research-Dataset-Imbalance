@@ -1,0 +1,2 @@
+dataset,n,d_raw,d_used,n_minority,minority_pct,IR,F1_fisher,N1_mst,N3_1nn_error,macro_f1_1nn,sample_size
+cicids2017,50000,77,67,8433,16.866,4.93,0.522,0.0376,0.0152,0.9729,5000

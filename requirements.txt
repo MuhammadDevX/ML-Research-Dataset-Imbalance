@@ -1,0 +1,12 @@
+# Versions that decide the results are pinned: both team members and every
+# Colab session must use exactly these. Do not change without a reviewed PR.
+scikit-learn==1.9.1
+imbalanced-learn==0.14.2
+xgboost==3.4.1
+lightgbm==4.7.0
+# Support libraries: any recent version is fine (Colab's defaults work).
+numpy>=1.26
+pandas>=2.1
+scipy>=1.11
+pyarrow>=14
+statsmodels>=0.14

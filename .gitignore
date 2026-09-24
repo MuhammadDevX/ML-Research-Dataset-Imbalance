@@ -1,3 +1,16 @@
 *.pyc
 figures/
 ignore/
+# keep the paper figures produced by the analysis notebooks
+!analysis/figures/
+
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+.pytest_cache/
+
+# raw downloads are large and have their own licences; see data/README.md
+data/raw/
+
+# smoke-test results are never part of the study
+*__SMOKE.csv
