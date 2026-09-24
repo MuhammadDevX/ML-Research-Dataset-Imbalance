@@ -56,6 +56,17 @@ def test_classifier_never_sees_test_rows(sampling_ratio):
         assert len(seen) > len(tr) * 0.9
 
 
+@pytest.mark.parametrize("ratio", [0.5, 1.0])
+def test_resampling_reaches_the_requested_ratio(ratio):
+    X, y = _data(n=1000, weights=(0.92,))
+    pipe = build_pipeline("tabular", LogisticRegression(), ratio, "none", 0.0, seed=0)
+    pipe.fit(X, y)
+    clf = pipe.named_steps["clf"]
+    achieved = clf.train_pos_ratio_after_ / (1 - clf.train_pos_ratio_after_)   # pos : neg
+    # Tomek links remove a few majority rows, so the ratio can only rise slightly.
+    assert ratio * 0.95 <= achieved <= ratio * 1.15
+
+
 def test_preprocessing_statistics_come_from_training_fold_only():
     X, y = _data()
     tr = np.arange(300)

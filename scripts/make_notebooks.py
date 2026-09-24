@@ -461,6 +461,24 @@ print("saved", out.relative_to(REPO_ROOT))"""),
     ]
 
 
+def compile_cells():
+    return [
+        ("md", """# Compile results
+{BADGE}
+
+Builds every table (`analysis/tables/`), figure (`analysis/figures/`) and the report
+`analysis/RESULTS.md` from all result CSVs. Datasets whose 9 main configs are not all
+finished are listed as pending and left out. Re-run it whenever new results arrive
+(for example after the CIC-IDS2017 or teammate runs)."""),
+        ("code", SETUP),
+        ("code", """from analysis.compile import compile_results
+from common.paths import REPO_ROOT
+df = compile_results()"""),
+        ("code", """from IPython.display import Markdown
+Markdown((REPO_ROOT / "analysis" / "RESULTS.md").read_text(encoding="utf-8"))"""),
+    ]
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dataset", action="append", default=[])
@@ -481,6 +499,7 @@ def main():
             write("cicids2017/e3_ir_sweep/cicids2017_e3_ir_sweep.ipynb", e3_cells())
     if a.analysis:
         write("analysis/01_merge_results.ipynb", analysis_cells())
+        write("analysis/02_compile_results.ipynb", compile_cells())
 
 
 if __name__ == "__main__":

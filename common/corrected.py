@@ -44,9 +44,11 @@ class CorrectedClassifier(ClassifierMixin, BaseEstimator):
         n_pos, n_neg = int((y == 1).sum()), int((y == 0).sum())
         if n_pos / n_neg >= self.sampling_ratio:
             return TomekLinks().fit_resample(X, y)
-        smote = SMOTE(k_neighbors=min(5, n_pos - 1), random_state=self.random_state)
-        sampler = SMOTETomek(sampling_strategy=self.sampling_ratio, smote=smote,
-                             random_state=self.random_state)
+        # The ratio must be set on the SMOTE object: when `smote` is passed,
+        # SMOTETomek ignores its own sampling_strategy and uses SMOTE's.
+        smote = SMOTE(sampling_strategy=self.sampling_ratio, k_neighbors=min(5, n_pos - 1),
+                      random_state=self.random_state)
+        sampler = SMOTETomek(smote=smote, random_state=self.random_state)
         return sampler.fit_resample(X, y)
 
     def fit(self, X, y):
