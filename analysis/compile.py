@@ -122,6 +122,11 @@ def compile_results(root=None, include_smoke=False):
            "Wilcoxon signed-rank over blocks with Holm correction; rank-biserial r in [-1, 1]; "
            "`blocks_sig_5x2cv` = blocks where Alpaydin's 5x2cv F-test gives p < 0.05, "
            "`of_which_better` = how many of those favour the second config.", "",
+           "Note on c8: SMOTETomek balances the training data to exactly 1:1, and its Tomek-link "
+           "step removes linked pairs from both classes, so the balance stays exact. Weights "
+           "recomputed after resampling are therefore exactly 1 and c8 is identical to c1 "
+           "(resampling alone). Recomputing only changes anything when resampling does not fully "
+           "balance the data; E2 covers that case (SMOTETomek to 1:2 with `recalc`).", "",
            md_table(show[["comparison", "question", "blocks", "median_diff", "CI", "wins", "losses",
                           "p_holm", "rank_biserial", "blocks_sig_5x2cv", "of_which_better"]]), ""]
 
@@ -145,7 +150,8 @@ def compile_results(root=None, include_smoke=False):
     md += ["## 6. Over-correction mechanism",
            "`rho_eff` = positive:negative loss mass the classifier sees (1 = balanced). "
            "`ppr_ratio` = predicted positive rate / true positive rate (1 = as many positives "
-           "predicted as exist; above 1 = over-predicting the minority).", "",
+           "predicted as exist; above 1 = over-predicting the minority). Values are the median "
+           "over the 7 classifiers of each classifier's mean over folds.", "",
            md_table(mech, floatfmt=".3f", index=True), "",
            "![PPR](figures/fig6_predicted_positive_ratio.png)", ""]
 

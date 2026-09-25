@@ -1,0 +1,2 @@
+dataset,n,d_raw,d_used,n_minority,minority_pct,IR,F1_fisher,N1_mst,N3_1nn_error,macro_f1_1nn,sample_size
+oilspill,937,47,47,41,4.376,21.85,0.4215,0.0672,0.0342,0.7749,937

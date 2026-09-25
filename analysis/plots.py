@@ -54,19 +54,19 @@ def main_bars(table, path):
     order = list(configs.CONFIGS)
     for ax, ds in zip(axes[0], ds_list):
         t = table[table["dataset"] == ds].set_index("config_id").reindex(order)
+        # Dots + SD whiskers rather than bars: the axis does not start at 0,
+        # and truncated bars would exaggerate the differences.
         x = np.arange(len(order))
         best = t["mean"].idxmax()
         colors = [SERIES[0] if c != best else SERIES[1] for c in order]
-        ax.bar(x, t["mean"], width=0.7, color=colors, edgecolor=SURFACE, linewidth=1)
-        ax.errorbar(x, t["mean"], yerr=t["std"], fmt="none", ecolor=INK2, elinewidth=1, capsize=2)
-        lo = max(0, (t["mean"] - t["std"]).min() - 0.03)
-        ax.set_ylim(lo, min(1, (t["mean"] + t["std"]).max() + 0.02))
+        ax.errorbar(x, t["mean"], yerr=t["std"], fmt="none", ecolor=AXIS, elinewidth=2)
+        ax.scatter(x, t["mean"], s=48, color=colors, edgecolor=SURFACE, linewidth=1.5, zorder=3)
         ax.set_xticks(x, [SHORT[c] for c in order], rotation=45, ha="right")
         ax.set_title(TITLES.get(ds, ds))
-        ax.set_ylabel("Macro-F1 (mean over 7 classifiers)")
+        ax.set_ylabel("Macro-F1 (mean ± SD over folds)")
         ax.grid(axis="x", visible=False)
         ax.annotate(f"best {t.loc[best, 'mean']:.3f}", (order.index(best), t.loc[best, "mean"]),
-                    textcoords="offset points", xytext=(0, 8), ha="center", color=INK2, fontsize=8)
+                    textcoords="offset points", xytext=(8, 0), va="center", color=INK2, fontsize=8)
     return _save(fig, path)
 
 

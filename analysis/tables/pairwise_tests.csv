@@ -1,0 +1,8 @@
+comparison,question,blocks,median_diff,ci_low,ci_high,wins,losses,p_wilcoxon,rank_biserial,blocks_sig_5x2cv,of_which_better,p_holm
+c1_A_smotetomek vs c0_none,Resampling alone vs no correction,7,-0.014584385642513631,-0.056573869084938444,0.047596675885277495,3,4,1.0,0.0,0,0,1.0
+c2_B_weights vs c0_none,Class weights alone vs no correction,7,0.016110815454150718,-0.058308759432804,0.023648263002023495,4,3,0.8125,-0.14285714285714285,0,0,1.0
+c3_C_threshold vs c0_none,Threshold tuning alone vs no correction,7,0.02541057649117484,-0.0034503959365830283,0.0816869425500586,4,3,0.21875,0.5714285714285714,0,0,0.65625
+c4_AB_smotetomek_weights vs c2_B_weights,Adding resampling on top of weights,7,-0.01761725021603322,-0.030819750250642985,-0.01009492366315956,1,6,0.15625,-0.6428571428571429,1,0,0.625
+c4_AB_smotetomek_weights vs c1_A_smotetomek,Adding original-ratio weights on top of resampling,7,-0.032554640598508544,-0.048127076744149955,0.012649566224188558,2,5,0.078125,-0.7857142857142857,1,0,0.46875
+c8_A_Brecalc vs c4_AB_smotetomek_weights,Original vs recomputed weights after resampling (R7),7,0.032554640598508544,-0.012649566224188558,0.048127076744149955,5,2,0.078125,0.7857142857142857,1,1,0.46875
+c7_ABC_full vs c4_AB_smotetomek_weights,Does threshold tuning repair stacked corrections?,7,0.020363694368062624,0.006631954397465223,0.05777089956100645,6,1,0.03125,0.9285714285714286,1,1,0.21875

@@ -1,0 +1,12 @@
+dataset,experiment,config_id,rows,expected,complete,git_commits,metric_nans
+oilspill,e2,e2,1560,1560,True,"a84542c,c5272b8",0
+oilspill,main,c0_none,70,70,True,c5272b8,0
+oilspill,main,c1_A_smotetomek,70,70,True,c5272b8,0
+oilspill,main,c2_B_weights,70,70,True,c5272b8,0
+oilspill,main,c3_C_threshold,70,70,True,c5272b8,0
+oilspill,main,c4_AB_smotetomek_weights,70,70,True,c5272b8,0
+oilspill,main,c5_AC_smotetomek_threshold,70,70,True,c5272b8,0
+oilspill,main,c6_BC_weights_threshold,70,70,True,c5272b8,0
+oilspill,main,c7_ABC_full,70,70,True,c5272b8,0
+oilspill,main,c8_A_Brecalc,70,70,True,c5272b8,0
+smsspam,main,c0_none,45,70,False,"a84542c,c5272b8",0

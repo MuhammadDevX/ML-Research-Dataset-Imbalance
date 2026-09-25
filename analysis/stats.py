@@ -100,6 +100,8 @@ def pooled_model(df, metric="macro_f1"):
     d = d[d["config_id"].isin(FACTORIAL)].copy()
     for f in "ABC":
         d[f + "e"] = 2 * d[f].astype(int) - 1
+    # a column named "C" would hide the formula's C(...) categorical helper
+    d = d.drop(columns=["A", "B", "C"])
     d["cluster"] = d["dataset"] + "_" + d["repeat"].astype(str) + "_" + d["fold"].astype(str)
     fit = smf.ols(f"{metric} ~ Ae * Be * Ce + C(classifier) + C(dataset)", data=d).fit(
         cov_type="cluster", cov_kwds={"groups": pd.factorize(d["cluster"])[0]})
@@ -194,11 +196,13 @@ def friedman_nemenyi(df, metric="macro_f1", alpha=0.05):
 
 
 def mechanism_summary(df):
-    """How each config shifts the decision towards the minority class."""
+    """How each config shifts the decision towards the minority class.
+    Mean over folds per classifier, then the MEDIAN over classifiers, so one
+    badly calibrated classifier (e.g. Gaussian NB) cannot dominate."""
     d = main_only(df)
-    g = d.groupby(["dataset", "config_id"])
-    out = g[["rho_eff", "ppr_ratio", "precision_1", "recall_1", "macro_f1"]].mean()
-    return out.round(3)
+    cols = ["rho_eff", "ppr_ratio", "precision_1", "recall_1", "macro_f1"]
+    per_clf = d.groupby(["dataset", "config_id", "classifier"])[cols].mean()
+    return per_clf.groupby(["dataset", "config_id"]).median().round(3)
 
 
 def e2_curves(df):

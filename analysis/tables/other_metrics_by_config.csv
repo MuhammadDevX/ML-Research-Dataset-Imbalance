@@ -1,0 +1,10 @@
+dataset,config_id,mcc,pr_auc,roc_auc,balanced_acc,gmean,precision_1,recall_1
+oilspill,c0_none,0.3841,0.4297,0.8554,0.655,0.5616,0.5435,0.4002
+oilspill,c1_A_smotetomek,0.3923,0.4373,0.855,0.719,0.6757,0.3971,0.5751
+oilspill,c2_B_weights,0.3854,0.4267,0.8578,0.7195,0.6631,0.3908,0.5825
+oilspill,c3_C_threshold,0.4189,0.4297,0.8554,0.6989,0.6054,0.502,0.4204
+oilspill,c4_AB_smotetomek_weights,0.3452,0.4052,0.8311,0.7311,0.6949,0.2934,0.6347
+oilspill,c5_AC_smotetomek_threshold,0.4099,0.4373,0.855,0.7148,0.6222,0.4434,0.4609
+oilspill,c6_BC_weights_threshold,0.4153,0.4267,0.8578,0.7256,0.6505,0.4404,0.4885
+oilspill,c7_ABC_full,0.3816,0.4052,0.8311,0.7129,0.6175,0.4,0.4598
+oilspill,c8_A_Brecalc,0.3923,0.4373,0.855,0.719,0.6757,0.3971,0.5751
