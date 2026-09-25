@@ -19,6 +19,8 @@ The code in `common/` is the reference. It differs from the plan in these places
   ratio (e.g. Pima), only Tomek-link cleaning is applied.
 - **E3** uses 10 search candidates per fold instead of 20 (5 levels × 9 configs). Every row
   records `n_iter` (0 = hyperparameters reused from the twin).
+- **Random Forest search:** `max_features` ∈ {sqrt, log2} instead of {sqrt, 0.3}. The 30% option made each
+  fit about 5x slower on the 300-dimensional SMS features, and sqrt is the standard default.
 - **Settings** are in `common/settings.py` and `common/configs.py`, not YAML files.
 - **Meta-features** are computed by `common/complexity.py` (F1 Fisher ratio, N1, N3, 1-NN
   macro-F1), not with `problexity`.
@@ -149,7 +151,7 @@ for dataset:
 | LinearSVM | `C` loguniform[1e-3, 1e2]; `max_iter=5000` |
 | GNB | `var_smoothing` loguniform[1e-11, 1e-5] |
 | DT | `max_depth` {3, 5, 8, 12, None}; `min_samples_leaf` {1, 2, 5, 10, 20}; `criterion` {gini, entropy} |
-| RF | `n_estimators` {200, 400}; `max_depth` {None, 8, 16}; `min_samples_leaf` {1, 2, 5}; `max_features` {sqrt, 0.3} |
+| RF | `n_estimators` {200, 400}; `max_depth` {None, 8, 16}; `min_samples_leaf` {1, 2, 5}; `max_features` {sqrt, log2} |
 | XGBoost | `n_estimators` {200, 400, 800}; `max_depth` {3, 4, 6, 8}; `learning_rate` loguniform[0.01, 0.3]; `subsample`, `colsample_bytree` U[0.6, 1]; `min_child_weight` {1, 3, 5}; `reg_lambda` loguniform[1e-2, 10]; `tree_method=hist` |
 | LightGBM | `n_estimators` {200, 400, 800}; `num_leaves` {15, 31, 63}; `learning_rate` loguniform[0.01, 0.3]; `subsample`, `colsample_bytree` U[0.6, 1]; `min_child_samples` {10, 20, 50} |
 

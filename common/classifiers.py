@@ -42,7 +42,9 @@ SEARCH_SPACES = {
         "n_estimators": [200, 400],
         "max_depth": [None, 8, 16],
         "min_samples_leaf": [1, 2, 5],
-        "max_features": ["sqrt", 0.3],
+        # sqrt is the standard RF default. A 30% option was dropped: on the
+        # 300-dimensional SMS features it made each fit about 5x slower.
+        "max_features": ["sqrt", "log2"],
     },
     "XGB": {
         "n_estimators": [200, 400, 800],
