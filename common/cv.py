@@ -65,8 +65,17 @@ def fit_evaluate(X, y, train_idx, test_idx, modality, clf_name, sampling_ratio,
             model, scoring="f1_macro",
             cv=StratifiedKFold(rs.threshold_cv, shuffle=True, random_state=seed),
             refit=True, n_jobs=rs.n_jobs, random_state=seed)
-        final.fit(X_tr, y_tr)
-        fitted_pipe, threshold = final.estimator_, float(final.best_threshold_)
+        try:
+            final.fit(X_tr, y_tr)
+            fitted_pipe, threshold = final.estimator_, float(final.best_threshold_)
+        except ValueError as e:
+            # Extreme weights can make a model's scores constant on a threshold-CV
+            # fold, so no threshold can be tuned. Keep the default threshold and
+            # record NaN, so these cases are visible and countable in the results.
+            if "constant predictions" not in str(e):
+                raise
+            final = fitted_pipe = model.fit(X_tr, y_tr)
+            threshold = float("nan")
     else:
         final, fitted_pipe, threshold = model, model, default_threshold(model)
 
