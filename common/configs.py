@@ -17,8 +17,14 @@ CONFIGS = {
     "c5_AC_smotetomek_threshold": dict(A=1, B=0, C=1, weight_mode="none",   twin="c1_A_smotetomek"),
     "c6_BC_weights_threshold":    dict(A=0, B=1, C=1, weight_mode="orig",   twin="c2_B_weights"),
     "c7_ABC_full":                dict(A=1, B=1, C=1, weight_mode="orig",   twin="c4_AB_smotetomek_weights"),
-    "c8_A_Brecalc":               dict(A=1, B=1, C=0, weight_mode="recalc", twin=None),
+    "c8_A_Brecalc":               dict(A=1, B=1, C=0, weight_mode="recalc", twin=None,
+                                       params_from="c1_A_smotetomek"),
 }
+
+# c8 reuses c1's tuned hyperparameters: SMOTETomek balances to exactly 1:1 (its
+# Tomek step removes linked pairs from both classes), so weights recomputed after
+# resampling are exactly 1 and c8's search would select the same values as c1's.
+# c8 still fits and evaluates its own models on every fold; reused rows have n_iter = 0.
 
 # Twins first, so the C = 1 configs can reuse their hyperparameters.
 RUN_ORDER = [
