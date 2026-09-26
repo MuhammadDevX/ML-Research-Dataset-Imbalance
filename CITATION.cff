@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this code or its results, please cite it as below."
+type: software
+title: "Factorial ablation of imbalance corrections across five domains"
+abstract: >-
+  Code, fixed data splits and results for a 2x2x2 factorial ablation of three
+  class-imbalance corrections (SMOTETomek resampling, cost-sensitive class weights
+  and decision-threshold tuning), plus weights recomputed after resampling, with
+  seven classifiers under nested 5x2 cross-validation on five datasets (Oil Spill,
+  SMS Spam, CIC-IDS2017, APS Failure at Scania Trucks, Credit Card Fraud).
+authors:
+  - family-names: Ijaz
+    given-names: Muhammad
+  - family-names: Rauf
+    given-names: Minahil
+repository-code: "https://github.com/MuhammadDevX/ML-Research-Dataset-Imbalance"
+keywords:
+  - class imbalance
+  - SMOTETomek
+  - cost-sensitive learning
+  - threshold tuning
+  - ablation study

@@ -24,6 +24,12 @@ The code in `common/` is the reference. It differs from the plan in these places
 - **Settings** are in `common/settings.py` and `common/configs.py`, not YAML files.
 - **Meta-features** are computed by `common/complexity.py` (F1 Fisher ratio, N1, N3, 1-NN
   macro-F1), not with `problexity`.
+- **Pima replaced by APS Failure at Scania Trucks** (manufacturing, member 2). It fills the
+  gap between Oil Spill (4.4%) and Credit Card Fraud (0.17%) with a high-dimensional (170
+  features), missing-value-heavy (8.3% of cells) table. The official train and test files
+  are pooled and a stratified 20,000-row sample is used (362 failures, 1.81%, IR 54): on
+  the full 76,000 rows one Random Forest fit after SMOTE took 6.5 minutes, too slow for
+  the whole factorial. Pima remains only in `legacy_v1_pima/`.
 - **Measured dataset facts:** Oil Spill 937 × 47 after dropping `attr1` (patch ID) and
   `attr23` (constant); SMS 5,171 after removing 403 duplicates (12.6% spam); CIC-IDS2017
   16.87% attacks after removing 308,381 duplicate and 1,396 label-conflicting flows;
@@ -35,7 +41,7 @@ The code in `common/` is the reference. It differs from the plan in these places
 
 | # | Concern | Design change | Where in repo | Evidence in revised paper |
 |---|---|---|---|---|
-| R1 | Single small dataset | 5 datasets from 5 domains, minority rate 0.17%–34.9%, plus a controlled imbalance-ratio (IR) sweep on CIC-IDS2017 (E3) | `pima/`, `oilspill/`, `smsspam/`, `cicids2017/`, `creditfraud/`, `cicids2017/e3_ir_sweep/` | Table 1 (dataset meta-features), Fig. 5 (IR sweep) |
+| R1 | Single small dataset | 5 datasets from 5 domains, minority rate 0.17%–16.9%, plus a controlled imbalance-ratio (IR) sweep on CIC-IDS2017 (E3) | `oilspill/`, `smsspam/`, `cicids2017/`, `aps/`, `creditfraud/`, `cicids2017/e3_ir_sweep/` | Table 1 (dataset meta-features), Fig. 5 (IR sweep) |
 | R2 | Not a true factorial | Full 2³ design over A, B, C (8 cells) crossed with 7 classifiers. Main and interaction effects are estimated by a linear mixed model (LMM) and by classical factorial effect contrasts | `<dataset>/c0…c7/`, `analysis/02_factorial_effects.ipynb` | Table 3 (A, B, C, AB, AC, BC, ABC effects with 95% CI), Fig. 3 (interaction plots) |
 | R3 | Fixed hyperparameters, single weight | Nested random search (20 iterations × 3 inner folds) per cell. Weight-sensitivity study E2 with 8 weight powers (including none and sqrt-inverse), recomputed weights, and 2 resampling ratios | `common/search_spaces.py`, `<dataset>/e2_weight_sensitivity/` | Fig. 4 (performance vs. effective correction ratio) |
 | R4 | Overgeneralization | Claims limited to "the five benchmarks evaluated". Effects related to IR and class overlap (N3) are reported as exploratory. Specific sentences are rewritten (§12) | `analysis/07_meta_regression.ipynb` | Discussion wording, new Limitations paragraph |
@@ -101,14 +107,14 @@ A common preprocessing chain is used for all datasets. Everything except the sta
 | **Oil Spill** (you) | Remote sensing | 937 × 49, full | 4.4% (21.9) | Label `'1'`→1, `'-1'`→0. Drop the patch-ID column if present; constant columns are removed by VarianceThreshold. The minority class is tiny (41), which is why the outer CV is 2-fold (~20 positives per test fold) |
 | **SMS Spam** (you) | Text / telecom | 5,574 → ~5,169 after dedup | ~12.6% (≈6.9) | Dedup exact messages **before** splitting, because duplicates across folds cause leakage (R10). TF-IDF (1–2-grams, `min_df=2`, `sublinear_tf`) → SVD(300), fitted inside folds. SVD gives a dense space where SMOTE interpolation and GNB are meaningful |
 | **CIC-IDS2017** (you) | Network security | 2.83M × 78 → dedup → **stratified 50,000** | Natural attack rate after dedup (≈17–20%, report the exact value) | Strip column names. Drop the duplicate `Fwd Header Length.1`. Convert `inf`→NaN (imputed inside folds). Target: BENIGN = 0, any attack = 1. Save the subsample indices (seed 2026) to `data/splits/`. Optional external check: evaluate final c0/c2/c4/c8 models on a disjoint 200k stratified hold-out |
-| **Pima Diabetes** (teammate, recommended) | Medicine | 768 × 8, full | 34.9% (1.87) | Keeps continuity with v1: it shows whether the v1 finding survives the new protocol. Zeros → NaN, imputed inside folds, which fixes v1's global median imputation |
+| **APS Failure, Scania Trucks** (teammate; replaces the originally planned Pima) | Manufacturing | 76,000 × 170 (train + test files pooled) → **stratified 20,000** | 1.81% (54.3) | `na` → NaN (8.3% of cells), imputed inside folds; constant columns removed by VarianceThreshold. Covers high dimensionality and heavy missingness |
 | **Credit Card Fraud (ULB)** (teammate, recommended) | Finance | 284,807 × 30 → dedup → **stratified 100,000** | ~0.17% (≈580) | Covers the extreme-IR end. Scale `Time`/`Amount` inside folds. About 167 frauds after subsampling, so ~80 per test fold |
 
 If the teammate prefers larger or other datasets, possible substitutes are:
 - AI4I 2020 Predictive Maintenance (manufacturing, 10k rows, 3.4%)
 - Bank Marketing (marketing, 45k rows, 11.7%)
 
-Together the recommended set spans minority rates of 35 / ~18 / 12.6 / 4.4 / 0.17%.
+Together the set spans minority rates of 16.9 / 12.6 / 4.4 / 1.81 / 0.167%.
 
 **Meta-features** (`<dataset>/meta_features/`, computed with `problexity` on a stratified subsample of at most 5k rows): N, d, n_min, IR, F1 (maximum Fisher discriminant ratio), N1, N3 (1-NN error rate), and a 1-NN baseline macro-F1. These are descriptive only and are never used in model selection. They feed the exploratory meta-regression (R4).
 

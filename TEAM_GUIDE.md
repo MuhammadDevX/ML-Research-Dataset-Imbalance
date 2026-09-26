@@ -2,7 +2,8 @@
 
 The paper compares 9 configurations across 5 datasets. That comparison is only valid if
 every dataset goes through exactly the same protocol. Member 1 runs Oil Spill, SMS Spam
-and CIC-IDS2017; member 2 runs Pima and Credit Card Fraud. Follow these rules.
+and CIC-IDS2017; member 2 runs APS Failure (Scania
+trucks) and Credit Card Fraud. Follow these rules.
 
 ## 1. Never change the protocol on your own
 - `common/`, `requirements.txt` and `scripts/make_notebooks.py` define the protocol.
@@ -13,29 +14,26 @@ and CIC-IDS2017; member 2 runs Pima and Credit Card Fraud. Follow these rules.
 - Every result row stores the git commit and package versions. A commit ending in
   `+dirty` means `common/` was edited locally: those rows are not valid.
 
-## 2. Adding your dataset (Pima, Credit Fraud)
-1. Put the raw file in `data/raw/` (never commit it).
-   - Pima: `diabetes.csv` (Kaggle "Pima Indians Diabetes Database", 768 rows).
-   - Credit Fraud: `creditcard.csv` (Kaggle "Credit Card Fraud Detection", ULB, 284,807 rows).
-2. Check the entry in `common/datasets.py` (`pima`, `creditfraud` already exist): set
-   `owner` if you want your name there. Keep `modality="tabular"`.
-3. Generate your notebooks:
-   `python scripts/make_notebooks.py --dataset pima --dataset creditfraud`
+## 2. Adding a dataset
+Member 2's datasets, APS Failure (`aps`) and Credit Card Fraud (`creditfraud`), are
+already added this way; their preprocessing notebooks are the worked examples.
+1. Put the raw file(s) in `data/raw/` (never commit them; `data/raw/` is gitignored).
+   The expected file names and sources are in `data/README.md`.
+2. Register the dataset in `common/datasets.py` (title, domain, owner, modality) and add
+   its preprocessing cells to `PREPROCESS` in `scripts/make_notebooks.py`.
+3. Generate the notebooks:
+   `python scripts/make_notebooks.py --dataset <name>`
    This creates the same folders as for the other datasets. **Never hand-edit a generated
    experiment notebook.**
-4. Fill in `pima/00_preprocessing/pima_preprocessing.ipynb` (and the same for
-   `creditfraud`). The generated template has the structure. Rules:
+4. Run `<name>/00_preprocessing/<name>_preprocessing.ipynb`. Rules:
    - `y` = 1 for the minority class, 0 for the majority.
    - Stateless steps only: map labels, drop identifier columns, turn invalid values into
      NaN, remove duplicate rows. **No** imputation, scaling or outlier removal, because
      those are fitted inside each training fold by the pipeline.
-   - Pima: in Glucose, BloodPressure, SkinThickness, Insulin and BMI a 0 means
-     "missing". Set these to NaN (do not impute).
-   - Credit Fraud: remove duplicate rows, then take a **stratified 100,000-row sample**
-     with `random_state=settings.MASTER_SEED` (see the CIC-IDS2017 preprocessing
-     notebook). Keep `Time` and `Amount` as they are; scaling happens in the pipeline.
-   - Finish with `data.save_processed(...)` and `data.make_outer_splits(...)`. Run it
-     locally, then commit `data/processed/<ds>.parquet` and `data/splits/<ds>_outer.npz`.
+   - Large data: take a **stratified sample** with `random_state=settings.MASTER_SEED`
+     (CIC-IDS2017 50,000 rows, Credit Card Fraud 100,000, APS 20,000).
+   - Finish with `data.save_processed(...)` and `data.make_outer_splits(...)`, then
+     commit `data/processed/<name>.parquet` and `data/splits/<name>_outer.npz`.
 5. Run the meta-features notebook (1 minute) and commit its CSV.
 
 ## 3. Running experiments on Colab
@@ -57,16 +55,18 @@ and CIC-IDS2017; member 2 runs Pima and Credit Card Fraud. Follow these rules.
   Its files end in `__SMOKE.csv`: never commit them or use them in the paper.
 
 ## 4. Handing results back
-1. Copy the finished CSVs from Drive into the same paths in the repository.
+1. Copy the finished CSVs from Drive into the same paths in the repository (not needed
+   when running locally with `scripts/run_experiments.py`).
 2. Run `analysis/01_merge_results.ipynb`. Every experiment must show `complete = True`,
    `metric_nans = 0`, and one git commit that is not `+dirty`.
 3. Run `python -m pytest tests`.
-4. Commit on your own branch (`data/pima`, `data/creditfraud`) and open a pull request.
+4. Commit on your own branch (e.g. `data/aps-creditfraud`) and open a pull request.
    The other person reviews it. Do not force-push.
 
 ## 5. Checklist before each pull request
 - [ ] `pytest tests` passes
 - [ ] `01_merge_results` shows every experiment complete, no NaN metrics
-- [ ] no raw data and no `__SMOKE.csv` files committed
+- [ ] no raw data, `logs/` or `__SMOKE.csv` files committed
+- [ ] no commits while a run is in progress (every row records the commit it ran on)
 - [ ] `data/splits/` files unchanged after the first commit of a dataset
 - [ ] no edits to `common/`, `requirements.txt` or generated notebooks
