@@ -30,7 +30,7 @@ only the imbalance ratio (CIC-IDS2017, BENIGN vs Bot).
 |---|---|---|---|---|---|
 | `oilspill/` | Oil Spill | remote sensing | 937 | 4.4% | member 1 |
 | `smsspam/` | SMS Spam Collection | text | 5,171 | 12.6% | member 1 |
-| `cicids2017/` | CIC-IDS2017 (50k stratified sample) | network security | 50,000 | 16.9% | member 1 |
+| `cicids2017/` | CIC-IDS2017 (50k sample, attacks down-sampled to 2%) | network security | 50,000 | 2.0% | member 1 |
 | `pima/` | Pima Indians Diabetes | medicine | 768 | 34.9% | member 2 |
 | `creditfraud/` | Credit Card Fraud (100k stratified sample) | finance | 100,000 | ~0.17% | member 2 |
 
