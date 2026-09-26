@@ -139,3 +139,22 @@ def test_text_pipeline_runs():
     res = fit_evaluate(X, y, idx[:600], idx[600:], "text", "GNB", 1.0, "none", 0.0, 0, 0,
                        RS, RS.n_iter)
     assert res["macro_f1"] > 0.5
+
+
+def test_resample_cache_does_not_change_results():
+    from common import corrected
+    X, y = _data(n=800, weights=(0.9,))
+    idx = np.random.default_rng(6).permutation(len(y))
+    args = (X, y, idx[:500], idx[500:], "tabular", "DT", 1.0, "orig", 1.0, 1, 0, RS, RS.n_iter)
+    corrected._RESAMPLE_CACHE.clear()
+    saved_size = corrected._RESAMPLE_CACHE_SIZE
+    corrected._RESAMPLE_CACHE_SIZE = 0          # every call recomputes
+    try:
+        uncached = fit_evaluate(*args)
+    finally:
+        corrected._RESAMPLE_CACHE_SIZE = saved_size
+    first = fit_evaluate(*args)                 # fills the cache
+    cached = fit_evaluate(*args)                # served from the cache
+    for k in ("macro_f1", "roc_auc", "threshold", "rho_eff", "train_pos_ratio_after",
+              "best_params_json"):
+        assert uncached[k] == first[k] == cached[k]

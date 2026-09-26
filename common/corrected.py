@@ -5,12 +5,32 @@ estimator is being trained on: the inner-CV training folds during the search,
 the outer training fold at refit, and the threshold-CV folds when C = 1. This
 is what rules out resampling/weighting leakage (reviewer R10).
 """
+import hashlib
+from collections import OrderedDict
+
 import numpy as np
 from imblearn.combine import SMOTETomek
 from imblearn.over_sampling import SMOTE
 from imblearn.under_sampling import TomekLinks
 from sklearn.base import BaseEstimator, ClassifierMixin, clone
 from sklearn.utils.metaestimators import available_if
+
+# Speed only, never results: SMOTETomek is deterministic for the same rows, ratio
+# and seed, so its output is kept per process and reused. Without this the
+# resampling of each inner fold is recomputed for all 20 search candidates, and
+# in E2 for every weight setting; on Credit Card Fraud (Tomek-link search over
+# ~66k rows) that was most of the run time.
+_RESAMPLE_CACHE: OrderedDict = OrderedDict()
+_RESAMPLE_CACHE_SIZE = 4   # 3 inner / threshold-CV folds + the refit
+
+
+def _cache_key(X, y, sampling_ratio, random_state):
+    h = hashlib.sha1()
+    for a in (np.ascontiguousarray(X), np.ascontiguousarray(y)):
+        h.update(str((a.shape, a.dtype.str)).encode())
+        h.update(a.data)
+    h.update(repr((float(sampling_ratio), random_state)).encode())
+    return h.hexdigest()
 
 
 def _base_has(attr):
@@ -41,6 +61,18 @@ class CorrectedClassifier(ClassifierMixin, BaseEstimator):
         self.random_state = random_state
 
     def _resample(self, X, y):
+        key = _cache_key(X, y, self.sampling_ratio, self.random_state)
+        if key in _RESAMPLE_CACHE:
+            _RESAMPLE_CACHE.move_to_end(key)
+            X_res, y_res = _RESAMPLE_CACHE[key]
+        else:
+            X_res, y_res = self._resample_uncached(X, y)
+            _RESAMPLE_CACHE[key] = (X_res, y_res)
+            while len(_RESAMPLE_CACHE) > _RESAMPLE_CACHE_SIZE:
+                _RESAMPLE_CACHE.popitem(last=False)
+        return X_res.copy(), y_res.copy()
+
+    def _resample_uncached(self, X, y):
         n_pos, n_neg = int((y == 1).sum()), int((y == 0).sum())
         if n_pos / n_neg >= self.sampling_ratio:
             return TomekLinks().fit_resample(X, y)
