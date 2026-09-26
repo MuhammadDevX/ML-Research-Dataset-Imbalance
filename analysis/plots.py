@@ -23,7 +23,7 @@ SHORT = {
     "c7_ABC_full": "c7 A+B+C", "c8_A_Brecalc": "c8 A+B'",
 }
 TITLES = {"oilspill": "Oil Spill", "smsspam": "SMS Spam", "cicids2017": "CIC-IDS2017",
-          "pima": "Pima", "creditfraud": "Credit Fraud"}
+          "aps": "APS", "creditfraud": "Credit Fraud"}
 
 
 def style():
