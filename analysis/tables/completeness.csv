@@ -9,5 +9,13 @@ oilspill,main,c5_AC_smotetomek_threshold,70,70,True,"04df632,c5272b8",0
 oilspill,main,c6_BC_weights_threshold,70,70,True,"04df632,c5272b8",0
 oilspill,main,c7_ABC_full,70,70,True,"04df632,c5272b8",0
 oilspill,main,c8_A_Brecalc,70,70,True,"04df632,c5272b8",0
-smsspam,main,c0_none,48,70,False,"04df632,c5272b8",0
-smsspam,main,c1_A_smotetomek,49,70,False,04df632,0
+smsspam,e2,e2,1560,1560,True,a4971f8,0
+smsspam,main,c0_none,70,70,True,"04df632,c5272b8",0
+smsspam,main,c1_A_smotetomek,70,70,True,04df632,0
+smsspam,main,c2_B_weights,70,70,True,04df632,0
+smsspam,main,c3_C_threshold,70,70,True,a4971f8,0
+smsspam,main,c4_AB_smotetomek_weights,70,70,True,"04df632,a4971f8",0
+smsspam,main,c5_AC_smotetomek_threshold,70,70,True,a4971f8,0
+smsspam,main,c6_BC_weights_threshold,70,70,True,a4971f8,0
+smsspam,main,c7_ABC_full,70,70,True,a4971f8,0
+smsspam,main,c8_A_Brecalc,70,70,True,a4971f8,0

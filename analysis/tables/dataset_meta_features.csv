@@ -1,2 +1,3 @@
 dataset,n,d_raw,d_used,n_minority,minority_pct,IR,F1_fisher,N1_mst,N3_1nn_error,macro_f1_1nn,sample_size
 oilspill,937,47,47,41,4.376,21.85,0.4215,0.0672,0.0342,0.7749,937
+smsspam,5171,1,100,653,12.628,6.92,0.3117,0.0718,0.0412,0.9071,5000
