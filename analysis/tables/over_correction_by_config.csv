@@ -1,4 +1,13 @@
 dataset,config_id,rho_eff,ppr_ratio,precision_1,recall_1,macro_f1
+cicids2017,c0_none,0.02,0.976,0.971,0.941,0.973
+cicids2017,c1_A_smotetomek,1.0,1.019,0.941,0.959,0.974
+cicids2017,c2_B_weights,1.0,1.009,0.948,0.959,0.976
+cicids2017,c3_C_threshold,0.02,0.985,0.953,0.94,0.973
+cicids2017,c4_AB_smotetomek_weights,49.0,1.171,0.834,0.979,0.948
+cicids2017,c5_AC_smotetomek_threshold,1.0,0.994,0.941,0.959,0.974
+cicids2017,c6_BC_weights_threshold,1.0,0.993,0.961,0.954,0.978
+cicids2017,c7_ABC_full,49.0,1.001,0.95,0.953,0.976
+cicids2017,c8_A_Brecalc,1.0,1.019,0.941,0.959,0.974
 oilspill,c0_none,0.046,0.701,0.602,0.331,0.67
 oilspill,c1_A_smotetomek,1.0,1.546,0.347,0.575,0.706
 oilspill,c2_B_weights,1.0,1.345,0.373,0.493,0.701

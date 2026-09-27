@@ -202,6 +202,31 @@ def e2_curves(curves, path):
     return _save(fig, path)
 
 
+def e3_effects(eff, path):
+    """How each factor's effect on macro-F1 changes as only the imbalance changes."""
+    style()
+    fig, ax = plt.subplots(figsize=(6.4, 3.4))
+    terms = [("A", "A: SMOTETomek"), ("B", "B: class weights"), ("C", "C: threshold tuning"),
+             ("AB", "A x B interaction")]
+    ax.axhline(0, color=AXIS, linewidth=1)
+    for k, (t, label) in enumerate(terms):
+        g = eff[eff["term"] == t].sort_values("minority_share")
+        x = g["minority_share"] * 100
+        ax.fill_between(x, g["ci_low"], g["ci_high"], color=SERIES[k], alpha=0.12, linewidth=0)
+        ax.plot(x, g["effect"], color=SERIES[k], marker="o", markersize=6,
+                markeredgecolor=SURFACE, markeredgewidth=1.5, label=label)
+    ax.set_xscale("log")
+    xs = sorted(eff["minority_share"].unique() * 100)
+    ax.set_xticks(xs, [f"{v:g}%" for v in xs])
+    ax.minorticks_off()
+    ax.invert_xaxis()
+    ax.set_xlabel("Minority (Bot) share - more imbalanced to the right")
+    ax.set_ylabel("Effect on macro-F1 (95% CI)")
+    ax.set_title("CIC-IDS2017 E3: factor effects as imbalance increases")
+    ax.legend(fontsize=7, loc="best")
+    return _save(fig, path)
+
+
 def over_correction(mech, path):
     """Predicted-positive ratio per config (1 = as many positives predicted as exist)."""
     style()

@@ -3,7 +3,8 @@
 Revised experiments for *An Ablation Study of Hybrid Strategies for Minority-Class
 Misclassification*. The full design and how it answers each reviewer comment is in
 [docs/REVISED_DESIGN.md](docs/REVISED_DESIGN.md). Team rules are in
-[TEAM_GUIDE.md](TEAM_GUIDE.md).
+[TEAM_GUIDE.md](TEAM_GUIDE.md). **Taking over the remaining runs? Start with
+[HANDOFF.md](HANDOFF.md).** Compiled results: [analysis/RESULTS.md](analysis/RESULTS.md).
 
 ## What is compared
 Three corrections, switched on and off in a full 2x2x2 factorial, plus one extra arm:
@@ -68,10 +69,13 @@ configs and E2 reuse hyperparameters from earlier ones and are much faster then.
 ```
 python -m venv .venv
 .venv\Scripts\activate            (Windows)   or   source .venv/bin/activate
-pip install -r requirements.txt nbconvert ipykernel pytest
+pip install -r requirements.txt pytest
 python -m pytest tests
+python scripts/run_experiments.py --status                 # what is done / missing
+python scripts/run_experiments.py --dataset <name> --compile   # run what is missing, resumable
 ```
 Notebooks work the same way locally; results go into the repository folders.
+`N_JOBS` sets the number of parallel workers (speed only, never results).
 Set the environment variable `SMOKE=1` for a quick test run.
 
 ## Reproducibility
