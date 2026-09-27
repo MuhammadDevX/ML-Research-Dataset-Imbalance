@@ -396,13 +396,13 @@ Where macro-F1 peaks along log2(rho_eff) (quadratic fit):
 
 ## 8. Dataset properties (Table 1)
 
-| dataset | n | d_raw | d_used | n_minority | minority_pct | IR | F1_fisher | N1_mst | N3_1nn_error | macro_f1_1nn | sample_size |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| aps | 20000 | 170 | 168 | 362 | 1.8100 | 54.2500 | 0.3036 | 0.0202 | 0.0118 | 0.8138 | 5000 |
-| cicids2017 | 50000 | 77 | 65 | 1000 | 2.0000 | 49.0000 | 0.5484 | 0.0136 | 0.0054 | 0.9294 | 5000 |
-| creditfraud | 100000 | 30 | 30 | 167 | 0.1670 | 597.8000 | 0.1585 | 0.0004 | 0.0000 | 1.0000 | 5000 |
-| oilspill | 937 | 47 | 47 | 41 | 4.3760 | 21.8500 | 0.4215 | 0.0672 | 0.0342 | 0.7749 | 937 |
-| smsspam | 5171 | 1 | 100 | 653 | 12.6280 | 6.9200 | 0.3117 | 0.0718 | 0.0412 | 0.9071 | 5000 |
+| dataset | n | d_raw | d_used | n_minority | minority_pct | IR | F1_fisher | N1_mst | N3_1nn_error | macro_f1_1nn | sample_size | sample_minority_pct |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| aps | 20000 | 170 | 169 | 362 | 1.8100 | 54.2500 | 0.3111 | 0.0558 | 0.0360 | 0.8548 | 5000 | 7.2400 |
+| cicids2017 | 50000 | 77 | 65 | 1000 | 2.0000 | 49.0000 | 0.5369 | 0.0306 | 0.0112 | 0.9826 | 5000 | 20.0000 |
+| creditfraud | 100000 | 30 | 30 | 167 | 0.1670 | 597.8000 | 0.2594 | 0.0168 | 0.0090 | 0.9284 | 5000 | 3.3400 |
+| oilspill | 937 | 47 | 47 | 41 | 4.3760 | 21.8500 | 0.4215 | 0.0672 | 0.0342 | 0.7749 | 937 | 4.3760 |
+| smsspam | 5171 | 1 | 100 | 653 | 12.6280 | 6.9200 | 0.3204 | 0.0736 | 0.0416 | 0.9079 | 5000 | 13.0600 |
 
 ## 9. Controlled imbalance sweep (E3, CIC-IDS2017 BENIGN vs Bot)
 N = 10,000 flows at each minority share; levels are nested, so only the imbalance changes. Classifiers: LR, RF, XGB; 10 search candidates per fold.

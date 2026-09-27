@@ -118,7 +118,7 @@ If the teammate prefers larger or other datasets, possible substitutes are:
 
 Together the set spans minority rates of 16.9 / 12.6 / 4.4 / 1.81 / 0.167%.
 
-**Meta-features** (`<dataset>/meta_features/`, computed with `problexity` on a stratified subsample of at most 5k rows): N, d, n_min, IR, F1 (maximum Fisher discriminant ratio), N1, N3 (1-NN error rate), and a 1-NN baseline macro-F1. These are descriptive only and are never used in model selection. They feed the exploratory meta-regression (R4).
+**Meta-features** (`<dataset>/meta_features/`, computed by `common/complexity.py` on at most 5k rows: every minority row plus a random majority sample, so the sample's minority share, reported as `sample_minority_pct`, is above the dataset's): N, d, n_min, IR, F1 (maximum Fisher discriminant ratio), N1, N3 (1-NN error rate), and a 1-NN baseline macro-F1. These are descriptive only and are never used in model selection. They feed the exploratory meta-regression (R4).
 
 **E3: controlled IR sweep (CIC-IDS2017, you).** BENIGN vs. Bot, N = 10,000 fixed, minority rate ∈ {15, 10, 5, 2, 1}% (1,500 → 100 Bot rows). All 9 configs are run with LR, RF, and XGBoost. Because only the IR changes, the "effect vs. IR" curves are not confounded by domain. Bot is chosen because DDoS and PortScan are almost perfectly separable, which would cause ceiling effects.
 

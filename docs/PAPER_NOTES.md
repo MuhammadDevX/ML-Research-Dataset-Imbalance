@@ -19,7 +19,7 @@ cross-dataset findings and §5c the CIC-IDS2017 Linear SVM anomaly.
 | Minority | 362 APS failures (1.81%), IR 54.3 | 167 frauds (0.167%), IR 597.8 |
 | Features | 170 anonymised sensor counters/histograms; 168 after removing constant columns in-fold | V1-V28 (PCA), Time, Amount |
 | Per outer fold | 10,000 train / 10,000 test, 181 positives in each test fold | 50,000 train / 50,000 test, 83-84 positives in each test fold |
-| Meta-features (5k-row sample) | F1 = 0.304, N1 = 0.020, N3 = 0.012, 1-NN macro-F1 = 0.814 | F1 = 0.159, N1 = 0.0004, N3 = 0.000, 1-NN macro-F1 = 1.000 (**unreliable, see §7**) |
+| Meta-features (5k rows: all minority + majority sample, see §7) | F1 = 0.311, N1 = 0.056, N3 = 0.036, 1-NN macro-F1 = 0.855 (sample 7.24% minority) | F1 = 0.259, N1 = 0.017, N3 = 0.009, 1-NN macro-F1 = 0.928 (sample 3.34% minority) |
 
 With Oil Spill (4.38%, IR 21.9), SMS Spam (12.6%, IR 6.9) and CIC-IDS2017 (2.0%, IR 49;
 attacks down-sampled from the natural 16.9%), the five datasets span minority rates of
@@ -247,9 +247,12 @@ Agree this with member 1 before writing.
   those samples.
 - **Few minority cases on Credit Card:** 167 frauds in total, about 83 per test fold, so
   minority metrics are noisier there; the fold SDs in §4 show it.
-- **Credit Card meta-features are not usable as computed.** The shared meta-feature code
-  samples 5,000 rows, which leaves about 8 frauds, giving N3 = 0 and 1-NN macro-F1 = 1.0.
-  Recompute them on all minority rows plus a majority sample before Table 1 (open item).
+- **Meta-features are computed on a 5,000-row sample** that keeps every minority row plus a
+  random majority sample (fixed 2026-09-28; a stratified sample had left Credit Card with 8
+  frauds and N3 = 0, 1-NN macro-F1 = 1.0). The sample's minority share is therefore higher
+  than the dataset's (column `sample_minority_pct`: Credit Card 3.34% vs 0.167%, CIC 20% vs
+  2%, APS 7.24% vs 1.81%). N3 and the 1-NN score depend on that share, so compare them
+  across datasets with care and say so in the Table 1 caption.
 - **Anonymised features** (APS counters, Credit Card PCA): no domain interpretation of
   feature effects.
 - **Threshold tuning does not fully correct XGBoost** in E2 (Credit Card, Oil Spill, APS;
@@ -286,8 +289,8 @@ Dataset and method citations. Verify the exact bibliographic details before subm
 - [x] CIC-IDS2017 results (main configs, E2, E3), recompiled; §5 updated (2026-09-28).
 - [ ] Agree with member 1 how to report the CIC Linear SVM anomaly (§5c); if a sensitivity
       table without Linear SVM is wanted, add it to `analysis/compile.py`.
-- [ ] Fix the Credit Card meta-features (§7) before building Table 1 (still N3 = 0,
-      1-NN macro-F1 = 1.0 in `analysis/RESULTS.md` §8).
+- [x] Credit Card meta-features fixed: sample keeps all minority rows (§7); Table 1 in
+      `analysis/RESULTS.md` §8 recomputed for all 5 datasets (2026-09-28).
 - [ ] Optional: the exploratory meta-regression planned in `REVISED_DESIGN.md` §8.7 was
       never built; E3 (§5b point 3) already shows the imbalance trend.
 - [ ] Confirm the author names in `CITATION.cff`; choose a licence.

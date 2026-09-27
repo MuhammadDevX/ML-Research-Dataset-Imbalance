@@ -1,2 +1,2 @@
-dataset,n,d_raw,d_used,n_minority,minority_pct,IR,F1_fisher,N1_mst,N3_1nn_error,macro_f1_1nn,sample_size
-aps,20000,170,168,362,1.81,54.25,0.3036,0.0202,0.0118,0.8138,5000
+dataset,n,d_raw,d_used,n_minority,minority_pct,IR,F1_fisher,N1_mst,N3_1nn_error,macro_f1_1nn,sample_size,sample_minority_pct
+aps,20000,170,169,362,1.81,54.25,0.3111,0.0558,0.036,0.8548,5000,7.24
