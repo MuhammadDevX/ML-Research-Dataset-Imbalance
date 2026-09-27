@@ -27,10 +27,10 @@ DATASETS = {
         owner="member_1",
         modality="tabular",
     ),
-    # ---- member 2 (fill in `domain` and make sure `owner` is right) -----
-    "pima": dict(
-        title="Pima Indians Diabetes",
-        domain="medicine",
+    # ---- member 2 -------------------------------------------------------
+    "aps": dict(
+        title="APS Failure (Scania Trucks)",
+        domain="manufacturing",
         owner="member_2",
         modality="tabular",
     ),

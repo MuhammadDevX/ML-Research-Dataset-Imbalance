@@ -3,7 +3,7 @@ use identical cells. Never hand-edit a generated experiment notebook; change
 this script (through a reviewed PR) and regenerate.
 
     python scripts/make_notebooks.py --dataset oilspill
-    python scripts/make_notebooks.py --dataset pima          # teammate
+    python scripts/make_notebooks.py --dataset aps --dataset creditfraud
     python scripts/make_notebooks.py --analysis
 
 Existing preprocessing notebooks are never overwritten (they hold outputs),
@@ -23,6 +23,11 @@ from common.datasets import DATASETS  # noqa: E402
 
 GITHUB = "MuhammadDevX/ML-Research-Dataset-Imbalance"
 BRANCH = "main"
+
+# Stratified sample sizes for the two large member-2 datasets (see their
+# preprocessing notebooks for the reasoning).
+APS_N = 20_000
+CREDIT_N = 100_000
 
 SETUP = f'''# ---- Setup: identical in every notebook. Do not edit. ----
 import os, sys, subprocess
@@ -249,6 +254,101 @@ for level in settings.E3_LEVELS:
     data.make_outer_splits(pool["y"].to_numpy()[subset], "cicids2017_e3", level=level, subset=subset)
     print(f"level {level:.0%}: {n_min} Bot + {settings.E3_N - n_min} BENIGN")"""),
     ],
+    "aps": [
+        ("md", """## Load
+APS Failure and Operational Data for Scania Trucks (UCI, Scania CV AB 2016, GPL-3.0).
+Two files, `aps_failure_training_set.csv` (60,000 rows) and `aps_failure_test_set.csv`
+(16,000 rows), each with a 20-line licence header, 170 anonymised numeric sensor
+features and `class` = `pos` (failure of the Air Pressure System) or `neg` (failure
+of another component). Missing values are written as `na`.
+
+The two files are the dataset's own train/test split. This study uses its own 5x2
+outer folds, so both files are pooled; the source file is kept as `meta_source`
+(description only, never a feature)."""),
+        ("code", """import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from common import data, settings
+from common.paths import RAW_DIR
+
+parts = []
+for part in ("training", "test"):
+    d = pd.read_csv(RAW_DIR / "aps" / f"aps_failure_{part}_set.csv", skiprows=20, na_values="na")
+    parts.append(pd.concat([d, pd.Series(part, index=d.index, name="meta_source")], axis=1))
+raw = pd.concat(parts, ignore_index=True)
+print(raw.shape)
+raw["class"].value_counts()"""),
+        ("md", f"""## Clean (stateless steps only)
+* Label: `pos` -> 1 (minority, APS failure), `neg` -> 0.
+* `na` -> NaN (imputed later inside each training fold). No columns are dropped here:
+  constant columns are removed by `VarianceThreshold` inside the pipeline.
+* Remove duplicate rows, then rows whose features appear with both labels.
+* **Stratified {{APS_N:,}}-row sample** (seed `MASTER_SEED`), keeping the natural failure
+  rate. The full 76,000 x 170 table makes Random Forest after SMOTE about 6 minutes per
+  single fit; the sample keeps the whole factorial and E2 on one workstation (same
+  approach as CIC-IDS2017 and Credit Card Fraud)."""),
+        ("code", """df = raw.copy()
+df["y"] = (df.pop("class") == "pos").astype(int)
+feats = [c for c in df.columns if c not in ("y", "meta_source")]
+print("missing cells:", int(df[feats].isna().sum().sum()),
+      f"({df[feats].isna().to_numpy().mean():.1%})")
+print("duplicate rows:", int(df.duplicated(subset=feats + ["y"]).sum()))
+df = df.drop_duplicates(subset=feats + ["y"])
+conflict = df.duplicated(subset=feats, keep=False)
+print("rows with both labels:", int(conflict.sum()))
+df = df[~conflict].reset_index(drop=True)
+
+APS_N = {APS_N}
+keep, _ = train_test_split(np.arange(len(df)), train_size=APS_N, stratify=df["y"],
+                           random_state=settings.MASTER_SEED)
+df = df.iloc[np.sort(keep)].reset_index(drop=True)
+print(df.shape)
+df["y"].value_counts()"""),
+        ("md", "## Save processed data and the 5x2 outer folds"),
+        ("code", """data.save_processed("aps", df)
+data.make_outer_splits(df["y"], "aps")
+data.summary("aps")"""),
+    ],
+    "creditfraud": [
+        ("md", """## Load
+Credit Card Fraud Detection (ULB Machine Learning Group, Kaggle): 284,807 European
+card transactions over two days in September 2013. `V1`-`V28` are PCA components,
+`Time` is seconds since the first transaction, `Amount` is the transaction amount,
+`Class` = 1 for fraud."""),
+        ("code", """import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from common import data, settings
+from common.paths import RAW_DIR
+
+raw = pd.read_csv(RAW_DIR / "creditcard.csv")
+print(raw.shape)
+raw["Class"].value_counts()"""),
+        ("md", f"""## Clean (stateless steps only)
+* Label: `Class` 1 -> 1 (fraud, minority), 0 -> 0.
+* Remove duplicate transactions, then transactions whose features appear with both labels.
+* `Time` and `Amount` are kept as they are; scaling happens inside the pipeline.
+* **Stratified {{CREDIT_N:,}}-row sample** (seed `MASTER_SEED`), keeping the natural fraud rate."""),
+        ("code", """df = raw.rename(columns={"Class": "y"})
+feats = [c for c in df.columns if c != "y"]
+print("duplicate rows:", int(df.duplicated().sum()))
+df = df.drop_duplicates()
+conflict = df.duplicated(subset=feats, keep=False)
+print("rows with both labels:", int(conflict.sum()))
+df = df[~conflict].reset_index(drop=True)
+print(f"after cleaning: {len(df):,} rows, {int(df['y'].sum())} frauds")
+
+CREDIT_N = {CREDIT_N}
+keep, _ = train_test_split(np.arange(len(df)), train_size=CREDIT_N, stratify=df["y"],
+                           random_state=settings.MASTER_SEED)
+df = df.iloc[np.sort(keep)].reset_index(drop=True)
+print(df.shape)
+df["y"].value_counts()"""),
+        ("md", "## Save processed data and the 5x2 outer folds"),
+        ("code", """data.save_processed("creditfraud", df)
+data.make_outer_splits(df["y"], "creditfraud")
+data.summary("creditfraud")"""),
+    ],
 }
 
 TEMPLATE_PREPROCESS = [
@@ -432,6 +532,10 @@ mf.T"""),
 def preprocessing_cells(ds):
     title = DATASETS[ds]["title"]
     body = PREPROCESS.get(ds, TEMPLATE_PREPROCESS)
+    subs = {"{APS_N:,}": f"{APS_N:,}", "{APS_N}": f"{APS_N:_}",
+            "{CREDIT_N:,}": f"{CREDIT_N:,}", "{CREDIT_N}": f"{CREDIT_N:_}"}
+    for token, value in subs.items():
+        body = [(kind, src.replace(token, value)) for kind, src in body]
     return [("md", f"""# {title} - preprocessing
 {{BADGE}}
 

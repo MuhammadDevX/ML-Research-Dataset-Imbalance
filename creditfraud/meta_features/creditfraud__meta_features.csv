@@ -1,0 +1,2 @@
+dataset,n,d_raw,d_used,n_minority,minority_pct,IR,F1_fisher,N1_mst,N3_1nn_error,macro_f1_1nn,sample_size,sample_minority_pct
+creditfraud,100000,30,30,167,0.167,597.8,0.2594,0.0168,0.009,0.9284,5000,3.34

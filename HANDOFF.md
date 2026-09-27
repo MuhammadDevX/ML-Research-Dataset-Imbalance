@@ -4,7 +4,10 @@
 runs. Read this file top to bottom before running anything. Everything needed is in the
 repository; no information lives outside it.
 
-State as of 2026-09-27 03:10 (commit that added this file). Check the live state at any time with:
+**Update 2026-09-28: every experiment is complete** (all 5 datasets, main configs, E2 and E3;
+see the table below). The rest of this file is kept as the record of how the runs were resumed.
+
+Original state as of 2026-09-27 03:10 (commit that added this file). Check the live state at any time with:
 
 ```
 python scripts/run_experiments.py --status
@@ -41,17 +44,20 @@ classifier × outer fold (schema in `common/io.py`).
 |---|---|---|---|
 | Oil Spill | ✅ 630/630 | ✅ 1560/1560 | n/a |
 | SMS Spam | ✅ 630/630 | ✅ 1560/1560 | n/a |
-| CIC-IDS2017 | ✅ 630/630 | ⏳ **1300/1560**: LR and RF done, XGB 260/520 | ⏳ **5/1350** (just started) |
-| Pima | ❌ not started (no notebooks generated yet) | ❌ | n/a |
-| Credit Fraud | ❌ not started (no notebooks generated yet) | ❌ | n/a |
+| CIC-IDS2017 | ✅ 630/630 | ✅ 1560/1560 | ✅ 1350/1350 |
+| APS Failure (replaced Pima) | ✅ 630/630 | ✅ 1560/1560 | n/a |
+| Credit Fraud | ✅ 630/630 | ✅ 1560/1560 | n/a |
 
 Why CIC E2/E3 stopped: the original laptop (16 GB RAM, of which only about 4 GB was free) ran
 out of memory (`numpy._core._exceptions._ArrayMemoryError`). It was **not** a code bug; the
 same code ran through all other experiments. Partial results are committed and **resume
 automatically**: rerunning an experiment skips every row already in its CSV.
 
-`analysis/RESULTS.md` currently compiles Oil Spill, SMS Spam and CIC-IDS2017 (main configs).
-CIC E2 and E3 are left out on purpose until they are complete.
+`analysis/RESULTS.md` compiles all five datasets, the E2 curves and the E3 sweep (section 9).
+E3 was finished by running its five imbalance levels (and, for the 1% and 2% levels, its three
+classifiers) as separate processes writing separate CSVs, then merging them. Each (level,
+classifier, fold) is independent and twin lookups are keyed by classifier and fold, so the
+results are identical to one sequential run; the 353 overlapping rows matched exactly.
 
 ## 3. Setup (once)
 

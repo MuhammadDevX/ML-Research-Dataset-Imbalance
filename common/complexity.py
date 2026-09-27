@@ -1,8 +1,8 @@
 """Dataset meta-features for relating effects to dataset properties (R1, R4).
 
-Descriptive only: never used for model selection. Computed on a stratified
-sample of at most 5,000 rows, after median imputation and standardisation (and
-TF-IDF + SVD for text).
+Descriptive only: never used for model selection. Computed on at most 5,000 rows
+(every minority row plus a random majority sample; see sample_rows), after median
+imputation and standardisation (and TF-IDF + SVD for text).
 """
 import numpy as np
 import pandas as pd
@@ -57,17 +57,33 @@ def n3_and_1nn(Z, y):
     return float((pred != y).mean()), f1_score(y, pred, average="macro")
 
 
+def sample_rows(y, max_rows=MAX_ROWS, seed=settings.MASTER_SEED) -> np.ndarray:
+    """Row indices for the meta-features: every minority row, plus a seeded random
+    sample of the majority to fill max_rows. A stratified sample would keep too few
+    minority rows at extreme imbalance (8 of 167 frauds on Credit Card), which made
+    N3 and the 1-NN score meaningless. Falls back to a stratified sample only if the
+    minority alone would fill more than half of max_rows."""
+    y = np.asarray(y).astype(int)
+    if len(y) <= max_rows:
+        return np.arange(len(y))
+    pos, neg = np.flatnonzero(y == 1), np.flatnonzero(y == 0)
+    if len(pos) > max_rows // 2:
+        idx, _ = train_test_split(np.arange(len(y)), train_size=max_rows, stratify=y,
+                                  random_state=seed)
+        return np.sort(idx)
+    rng = np.random.default_rng(seed)
+    neg = rng.choice(neg, size=max_rows - len(pos), replace=False)
+    return np.sort(np.concatenate([pos, neg]))
+
+
 def meta_features(X, y, modality, dataset) -> pd.DataFrame:
     y = np.asarray(y).astype(int)
     n, n_pos = len(y), int(y.sum())
     d = 1 if modality == "text" else X.shape[1]
-    if n > MAX_ROWS:
-        idx, _ = train_test_split(np.arange(n), train_size=MAX_ROWS, stratify=y,
-                                  random_state=settings.MASTER_SEED)
+    idx = sample_rows(y)
+    if len(idx) < n:
         X = X.iloc[idx] if hasattr(X, "iloc") else X[idx]
-        ys = y[idx]
-    else:
-        ys = y
+    ys = y[idx]
     Z = _prepare(X, modality)
     n3, nn_f1 = n3_and_1nn(Z, ys)
     return pd.DataFrame([{
@@ -83,4 +99,7 @@ def meta_features(X, y, modality, dataset) -> pd.DataFrame:
         "N3_1nn_error": round(n3, 4),
         "macro_f1_1nn": round(nn_f1, 4),
         "sample_size": len(ys),
+        # N3 and the 1-NN score depend on the class ratio of the sample, which is
+        # higher than the dataset's when the minority is kept whole.
+        "sample_minority_pct": round(100 * ys.mean(), 3),
     }])

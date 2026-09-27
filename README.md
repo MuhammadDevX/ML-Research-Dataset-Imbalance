@@ -32,13 +32,14 @@ only the imbalance ratio (CIC-IDS2017, BENIGN vs Bot).
 | `oilspill/` | Oil Spill | remote sensing | 937 | 4.4% | member 1 |
 | `smsspam/` | SMS Spam Collection | text | 5,171 | 12.6% | member 1 |
 | `cicids2017/` | CIC-IDS2017 (50k sample, attacks down-sampled to 2%) | network security | 50,000 | 2.0% | member 1 |
-| `pima/` | Pima Indians Diabetes | medicine | 768 | 34.9% | member 2 |
-| `creditfraud/` | Credit Card Fraud (100k stratified sample) | finance | 100,000 | ~0.17% | member 2 |
+| `aps/` | APS Failure at Scania Trucks (20k stratified sample) | manufacturing | 20,000 | 1.81% | member 2 |
+| `creditfraud/` | Credit Card Fraud (100k stratified sample) | finance | 100,000 | 0.167% | member 2 |
 
 ## Layout
 ```
 common/                 shared protocol code (pipeline, CV, metrics, results schema)
 scripts/make_notebooks.py   generates every notebook from one template
+scripts/run_experiments.py  runs a dataset's notebooks locally, in parallel and in dependency order
 data/processed/, data/splits/   preprocessed data and fixed outer folds (committed)
 data/raw/               raw downloads (not committed, see data/README.md)
 <dataset>/
@@ -66,10 +67,12 @@ Run the configs in the order given in [TEAM_GUIDE.md](TEAM_GUIDE.md): the thresh
 configs and E2 reuse hyperparameters from earlier ones and are much faster then.
 
 ## Running locally
+The environment is managed with [uv](https://docs.astral.sh/uv/). Python 3.12 (pinned in
+`.python-version`) is the version Colab uses.
 ```
-python -m venv .venv
+uv venv
+uv pip install -r requirements.txt nbconvert ipykernel pytest
 .venv\Scripts\activate            (Windows)   or   source .venv/bin/activate
-pip install -r requirements.txt pytest
 python -m pytest tests
 python scripts/run_experiments.py --status                 # what is done / missing
 python scripts/run_experiments.py --dataset <name> --compile   # run what is missing, resumable
@@ -78,7 +81,18 @@ Notebooks work the same way locally; results go into the repository folders.
 `N_JOBS` sets the number of parallel workers (speed only, never results).
 Set the environment variable `SMOKE=1` for a quick test run.
 
+To run every experiment of one or more datasets on one machine:
+```
+python scripts/run_experiments.py --dataset aps --dataset creditfraud --parallel 4 --workers 6
+```
+The notebooks are executed in place, several at a time (`--parallel`), each with
+`--workers` search processes, in dependency order (C = 1 configs after their twins, c8 after c1, E2
+after c0 and c1). Logs go to `logs/` (not committed). The script can be stopped and
+restarted at any time: finished folds are skipped. On a 20-thread, 24 GB Windows machine,
+4 x 6 fits in memory.
+
 ## Reproducibility
+- The Python environment is built with uv from the pinned `requirements.txt`.
 - One master seed (2026) drives the samples, outer folds, inner folds, resampling and
   every estimator. The outer folds are stored in `data/splits/`, so every run and both
   team members use identical folds.
@@ -88,3 +102,8 @@ Set the environment variable `SMOKE=1` for a quick test run.
 - Anything fitted (imputation, scaling, TF-IDF/SVD, resampling, class weights, the
   decision threshold) is fitted only on training data inside each fold;
   `tests/test_no_leakage.py` checks this.
+
+## Citing
+If you use this code or its results, please cite it with the metadata in
+[CITATION.cff](CITATION.cff) (GitHub shows a "Cite this repository" button for it), and
+cite the original datasets listed in [data/README.md](data/README.md).
