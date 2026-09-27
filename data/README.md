@@ -17,7 +17,7 @@ To re-run preprocessing, put the raw files here:
 |---|---|---|
 | Oil Spill | label `'1'`->1, `'-1'`->0; drop `attr1` (patch ID) and `attr23` (constant); no duplicates found | 937 rows, 47 features, 41 positive |
 | SMS Spam | spam->1; 403 duplicate messages removed | 5,171 messages, 653 spam |
-| CIC-IDS2017 | strip column names; drop `Fwd Header Length.1`; 4,376 inf -> NaN; 308,381 duplicate flows and 1,396 label-conflicting flows removed; BENIGN->0, attack->1; stratified 50,000 sample | 50,000 flows, 77 features, 16.87% attacks |
+| CIC-IDS2017 | strip column names; drop `Fwd Header Length.1`; 4,376 inf -> NaN; 308,381 duplicate flows and 1,396 label-conflicting flows removed; BENIGN->0, attack->1 (16.87% attacks after cleaning); main sample = 49,000 BENIGN + 1,000 attacks stratified by attack type | 50,000 flows, 77 features, 2.0% attacks (IR 49) |
 | APS Failure | pool the official train (60,000) and test (16,000) files; `pos`->1; `na` -> NaN (8.3% of cells); no duplicates or label conflicts; stratified 20,000 sample | 20,000 rows, 170 features, 362 positive (1.81%) |
 | Credit Card Fraud | 1,081 duplicate transactions removed, no label conflicts; `Time`, `Amount` kept unscaled; stratified 100,000 sample | 100,000 rows, 30 features, 167 fraud (0.167%) |
 | CIC-IDS2017 E3 pool | all 1,953 Bot flows + 10,000 BENIGN; nested levels of N = 10,000 at 15/10/5/2/1% Bot | `cicids2017_e3.parquet` + one split file per level |

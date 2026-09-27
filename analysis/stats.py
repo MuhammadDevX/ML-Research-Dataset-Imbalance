@@ -250,6 +250,25 @@ def macro_f1_peak(df):
     return pd.DataFrame(rows)
 
 
+def e3_table(df, metric="macro_f1"):
+    """E3: config x minority share, mean over classifiers and folds."""
+    d = df[df["experiment"] == "e3"]
+    return d.pivot_table(index="config_id", columns="ir_level", values=metric).reindex(
+        list(configs.CONFIGS)).sort_index(axis=1, ascending=False)
+
+
+def e3_effects(df, metric="macro_f1", n_boot=2000):
+    """Factorial effects at each E3 imbalance level (averaged over classifiers),
+    computed exactly like the main factorial with the level in place of the dataset."""
+    d = df[df["experiment"] == "e3"].copy()
+    d["dataset"] = "level_" + d["ir_level"].astype(float).map(lambda v: f"{v:.2f}")
+    d["experiment"] = "main"
+    eff = factorial_effects(d, metric, n_boot=n_boot)
+    eff = eff[eff["classifier"] == "ALL"].copy()
+    eff["minority_share"] = eff["dataset"].str.replace("level_", "").astype(float)
+    return eff.drop(columns=["dataset", "classifier"])
+
+
 def results_table(df, metric="macro_f1", by_classifier=False):
     """Mean Â± SD over folds: config x dataset (averaged over classifiers) or
     config x classifier per dataset."""

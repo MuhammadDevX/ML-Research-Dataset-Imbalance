@@ -11,3 +11,7 @@ scipy>=1.11
 pyarrow>=14
 statsmodels>=0.14
 matplotlib>=3.7
+# Running notebooks locally with scripts/run_experiments.py
+nbformat>=5.9
+nbclient>=0.10
+ipykernel>=6.29

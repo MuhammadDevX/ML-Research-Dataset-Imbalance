@@ -9,6 +9,17 @@ aps,main,c5_AC_smotetomek_threshold,70,70,True,4ca1c69,0
 aps,main,c6_BC_weights_threshold,70,70,True,4ca1c69,0
 aps,main,c7_ABC_full,70,70,True,4ca1c69,0
 aps,main,c8_A_Brecalc,70,70,True,cbfb9d6,0
+cicids2017,e2,e2,1300,1560,False,4514c5e,0
+cicids2017,e3,c0_none,5,150,False,4514c5e,0
+cicids2017,main,c0_none,70,70,True,3fb6ef0,0
+cicids2017,main,c1_A_smotetomek,70,70,True,"3fb6ef0,4514c5e",0
+cicids2017,main,c2_B_weights,70,70,True,4514c5e,0
+cicids2017,main,c3_C_threshold,70,70,True,4514c5e,0
+cicids2017,main,c4_AB_smotetomek_weights,70,70,True,4514c5e,0
+cicids2017,main,c5_AC_smotetomek_threshold,70,70,True,4514c5e,0
+cicids2017,main,c6_BC_weights_threshold,70,70,True,4514c5e,0
+cicids2017,main,c7_ABC_full,70,70,True,4514c5e,0
+cicids2017,main,c8_A_Brecalc,70,70,True,4514c5e,0
 creditfraud,e2,e2,1560,1560,True,4ca1c69,0
 creditfraud,main,c0_none,70,70,True,"4ca1c69,cbfb9d6",0
 creditfraud,main,c1_A_smotetomek,70,70,True,"4ca1c69,cbfb9d6",0

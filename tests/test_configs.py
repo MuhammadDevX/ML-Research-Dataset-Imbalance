@@ -18,6 +18,14 @@ def test_twins_differ_only_in_threshold():
             assert configs.RUN_ORDER.index(cfg["twin"]) < configs.RUN_ORDER.index(cid)
 
 
+def test_params_from_source_runs_first_and_uses_same_resampling():
+    for cid, cfg in configs.CONFIGS.items():
+        src = cfg.get("params_from")
+        if src:
+            assert configs.CONFIGS[src]["A"] == cfg["A"] and configs.CONFIGS[src]["C"] == cfg["C"]
+            assert configs.RUN_ORDER.index(src) < configs.RUN_ORDER.index(cid)
+
+
 def test_weight_mode_matches_B():
     for cfg in configs.CONFIGS.values():
         assert (cfg["weight_mode"] != "none") == bool(cfg["B"])

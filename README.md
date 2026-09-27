@@ -3,7 +3,8 @@
 Revised experiments for *An Ablation Study of Hybrid Strategies for Minority-Class
 Misclassification*. The full design and how it answers each reviewer comment is in
 [docs/REVISED_DESIGN.md](docs/REVISED_DESIGN.md). Team rules are in
-[TEAM_GUIDE.md](TEAM_GUIDE.md).
+[TEAM_GUIDE.md](TEAM_GUIDE.md). **Taking over the remaining runs? Start with
+[HANDOFF.md](HANDOFF.md).** Compiled results: [analysis/RESULTS.md](analysis/RESULTS.md).
 
 ## What is compared
 Three corrections, switched on and off in a full 2x2x2 factorial, plus one extra arm:
@@ -30,7 +31,7 @@ only the imbalance ratio (CIC-IDS2017, BENIGN vs Bot).
 |---|---|---|---|---|---|
 | `oilspill/` | Oil Spill | remote sensing | 937 | 4.4% | member 1 |
 | `smsspam/` | SMS Spam Collection | text | 5,171 | 12.6% | member 1 |
-| `cicids2017/` | CIC-IDS2017 (50k stratified sample) | network security | 50,000 | 16.9% | member 1 |
+| `cicids2017/` | CIC-IDS2017 (50k sample, attacks down-sampled to 2%) | network security | 50,000 | 2.0% | member 1 |
 | `aps/` | APS Failure at Scania Trucks (20k stratified sample) | manufacturing | 20,000 | 1.81% | member 2 |
 | `creditfraud/` | Credit Card Fraud (100k stratified sample) | finance | 100,000 | 0.167% | member 2 |
 
@@ -73,8 +74,11 @@ uv venv
 uv pip install -r requirements.txt nbconvert ipykernel pytest
 .venv\Scripts\activate            (Windows)   or   source .venv/bin/activate
 python -m pytest tests
+python scripts/run_experiments.py --status                 # what is done / missing
+python scripts/run_experiments.py --dataset <name> --compile   # run what is missing, resumable
 ```
 Notebooks work the same way locally; results go into the repository folders.
+`N_JOBS` sets the number of parallel workers (speed only, never results).
 Set the environment variable `SMOKE=1` for a quick test run.
 
 To run every experiment of one or more datasets on one machine:
@@ -82,7 +86,7 @@ To run every experiment of one or more datasets on one machine:
 python scripts/run_experiments.py --dataset aps --dataset creditfraud --parallel 4 --workers 6
 ```
 The notebooks are executed in place, several at a time (`--parallel`), each with
-`--workers` search processes, in dependency order (C = 1 configs after their twins, E2
+`--workers` search processes, in dependency order (C = 1 configs after their twins, c8 after c1, E2
 after c0 and c1). Logs go to `logs/` (not committed). The script can be stopped and
 restarted at any time: finished folds are skipped. On a 20-thread, 24 GB Windows machine,
 4 x 6 fits in memory.

@@ -32,7 +32,9 @@ The code in `common/` is the reference. It differs from the plan in these places
   the whole factorial. Pima remains only in `legacy_v1_pima/`.
 - **Measured dataset facts:** Oil Spill 937 × 47 after dropping `attr1` (patch ID) and
   `attr23` (constant); SMS 5,171 after removing 403 duplicates (12.6% spam); CIC-IDS2017
-  16.87% attacks after removing 308,381 duplicate and 1,396 label-conflicting flows;
+  16.87% attacks after removing 308,381 duplicate and 1,396 label-conflicting flows. Because that is only mildly
+  imbalanced, the main CIC sample is 49,000 BENIGN + 1,000 attacks (2%, IR 49; attacks stratified by attack type),
+  placing it between Oil Spill (4.4%) and Credit Fraud (0.17%);
   E3 pool has 1,953 Bot flows.
 
 ---

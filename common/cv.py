@@ -137,9 +137,10 @@ def run_config(dataset, config_id, smoke=False, classifiers=None, reuse_twin=Tru
     done = io.done_keys(path)
 
     twin = {}
-    if reuse_twin and cfg["twin"]:
-        twin = _params_lookup(results_path(dataset, cfg["twin"], smoke), cfg["twin"])
-        print(f"Twin {cfg['twin']}: tuned hyperparameters found for {len(twin)} folds "
+    source = cfg["twin"] or cfg.get("params_from")
+    if reuse_twin and source:
+        twin = _params_lookup(results_path(dataset, source, smoke), source)
+        print(f"Reusing tuned hyperparameters of {source}: found for {len(twin)} folds "
               f"(the rest are tuned here with the same seed, giving the same result).")
 
     sr, wp = configs.sampling_ratio(cfg), configs.weight_power(cfg)
@@ -253,7 +254,8 @@ def run_e3(levels=None, smoke=False, classifiers=None):
             cfg = configs.get(config_id)
             sr, wp = configs.sampling_ratio(cfg), configs.weight_power(cfg)
             done = io.done_keys(path)
-            twin = _params_lookup(path, cfg["twin"], level) if cfg["twin"] else {}
+            source = cfg["twin"] or cfg.get("params_from")
+            twin = _params_lookup(path, source, level) if source else {}
             total, k = len(clfs) * len(splits), 0
             print(f"--- {config_id}")
             for clf in clfs:

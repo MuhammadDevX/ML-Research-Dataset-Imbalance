@@ -194,13 +194,22 @@ index["y"] = (index["label"] != "BENIGN").astype(int)
 print(f"after cleaning: {len(index):,} flows, attack rate {index['y'].mean():.2%}")
 index["label"].value_counts()"""),
         ("md", f"""## Select the rows
-* **Main dataset:** stratified 50,000-flow sample; keeps the natural attack rate.
+* **Main dataset:** 50,000 flows at a **2% attack share** (49,000 BENIGN + 1,000 attacks).
+  The natural attack share after cleaning is about 17%, only mildly imbalanced, so attacks are
+  down-sampled to place CIC-IDS2017 between Oil Spill (4.4%) and Credit Fraud (0.17%). The
+  1,000 attacks are a stratified sample over attack types, so the attack mix stays
+  representative of the full dataset.
 * **E3 pool (BENIGN vs Bot):** all Bot flows plus {settings.E3_N:,} random BENIGN flows.
 
 Both samples are fixed by `MASTER_SEED`."""),
-        ("code", """main_idx, _ = train_test_split(np.arange(len(index)), train_size=50_000,
-                               stratify=index["y"], random_state=settings.MASTER_SEED)
-main_sel = index.iloc[np.sort(main_idx)]
+        ("code", """MAIN_N, ATTACK_SHARE = 50_000, 0.02
+n_attack = round(MAIN_N * ATTACK_SHARE)
+attacks = index[index["y"] == 1]
+att_idx, _ = train_test_split(attacks.index.to_numpy(), train_size=n_attack,
+                              stratify=attacks["label"], random_state=settings.MASTER_SEED)
+ben_idx = index[index["y"] == 0].sample(n=MAIN_N - n_attack,
+                                        random_state=settings.MASTER_SEED).index.to_numpy()
+main_sel = index.loc[np.sort(np.concatenate([att_idx, ben_idx]))]
 bot_sel = index[index["label"] == "Bot"]
 benign_sel = index[index["label"] == "BENIGN"].sample(n=settings.E3_N, random_state=settings.MASTER_SEED)
 e3_sel = pd.concat([benign_sel, bot_sel])

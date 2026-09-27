@@ -8,6 +8,15 @@ aps,c5_AC_smotetomek_threshold,1.0,1.132,0.618,0.723,0.816
 aps,c6_BC_weights_threshold,1.0,1.055,0.613,0.708,0.815
 aps,c7_ABC_full,54.249,1.392,0.465,0.708,0.759
 aps,c8_A_Brecalc,1.0,1.53,0.452,0.742,0.777
+cicids2017,c0_none,0.02,0.976,0.971,0.941,0.973
+cicids2017,c1_A_smotetomek,1.0,1.019,0.941,0.959,0.974
+cicids2017,c2_B_weights,1.0,1.009,0.948,0.959,0.976
+cicids2017,c3_C_threshold,0.02,0.985,0.953,0.94,0.973
+cicids2017,c4_AB_smotetomek_weights,49.0,1.171,0.834,0.979,0.948
+cicids2017,c5_AC_smotetomek_threshold,1.0,0.994,0.941,0.959,0.974
+cicids2017,c6_BC_weights_threshold,1.0,0.993,0.961,0.954,0.978
+cicids2017,c7_ABC_full,49.0,1.001,0.95,0.953,0.976
+cicids2017,c8_A_Brecalc,1.0,1.019,0.941,0.959,0.974
 creditfraud,c0_none,0.002,0.838,0.887,0.756,0.896
 creditfraud,c1_A_smotetomek,1.0,1.905,0.481,0.823,0.788
 creditfraud,c2_B_weights,1.0,1.248,0.608,0.832,0.825
